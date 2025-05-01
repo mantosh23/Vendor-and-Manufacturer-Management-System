@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Stock</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+
+  .navbar{
+    background-color: #007bff;
+    margin-bottom: 2rem;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container-fluid">
+  <a class="navbar-brand" href="#">VendoMan</a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/vendor_dashboard">
+          <i class="fa fa-tachometer-alt"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout">
+          <i class="fa fa-sign-out-alt"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+<div class="container mt-5">
+  <h3 class="mb-4">Edit Stock - <%= stock.product_name %> (<%= stock.product_id %>)</h3>
+
+  <form method="POST" action="/vendor/stock/<%= stock.id %>?_method=PATCH">
+    <div class="mb-3">
+      <label class="form-label">Quantity</label>
+      <input type="number" name="quantity" value="<%= stock.quantity %>" required class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Price</label>
+      <input type="number" step="0.01" name="price" value="<%= stock.price %>" required class="form-control" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea name="description" rows="3" required class="form-control"><%= stock.description %></textarea>
+    </div>
+
+    <button class="btn btn-primary">Update</button>
+    <a href="/stock" class="btn btn-secondary ms-2">Cancel</a>
+  </form>
+</div>
+<%- include("../includes/footer.ejs") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

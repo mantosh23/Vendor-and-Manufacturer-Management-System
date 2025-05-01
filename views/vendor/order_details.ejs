@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0;
+      position: relative;
+    }
+    .step {
+      width: 25%;
+      text-align: center;
+      position: relative;
+    }
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      height: 4px;
+      width: 100%;
+      background: #ccc;
+      z-index: -1;
+      transform: translateX(-50%);
+    }
+    .step.active::before {
+      background: #007bff;
+    }
+    .step.rejected::before {
+      background: #dc3545;
+    }
+    .circle {
+      width: 30px;
+      height: 30px;
+      background: #ccc;
+      border-radius: 50%;
+      margin: 0 auto;
+      line-height: 30px;
+      color: white;
+    }
+    .step.active .circle {
+      background: #007bff;
+    }
+    .step.rejected .circle {
+      background: #dc3545;
+    }
+    .product-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+    .navbar {
+        background-color: #007bff;
+    }
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">VendoMan</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/vendor_dashboard">
+                  <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">
+                  <i class="fa fa-sign-out-alt"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container mt-5">
+  <a href="/vendor/orders" class="btn btn-secondary mb-3">← Back to Orders</a>
+  <h2>Order ID: <%= order.order_id %></h2>
+  <p><strong>Total Amount:</strong> ₹<%= parseFloat(order.total_amount).toFixed(2) %></p>
+  <p><strong>Date:</strong> <%= new Date(order.order_date).toLocaleString() %></p>
+
+  <% if (order.order_status === 'Order Rejected') { %>
+    <div class="alert alert-danger">
+      <strong>Order Rejected</strong>
+    </div>
+  <% } %>
+
+  <div class="stepper">
+    <% if (order.order_status === 'Rejected') { %>
+      <!-- If order is rejected, show rejected steps -->
+      <div class="step rejected">
+        <div class="circle">1</div>
+        <p>Order Placed</p>
+      </div>
+      <div class="step rejected">
+        <div class="circle">2</div>
+        <p>Order Rejected</p>
+      </div>
+      <div class="step">
+        <div class="circle">3</div>
+        <p>Dispatched</p>
+      </div>
+      <div class="step">
+        <div class="circle">4</div>
+        <p>Delivered</p>
+      </div>
+    <% } else { %>
+      <!-- Normal flow if order is not rejected -->
+      <div class="step <% if (order.order_status !== 'Order Placed') { %>active<% } %>">
+        <div class="circle">1</div>
+        <p>Order Placed</p>
+      </div>
+      <div class="step <% if (order.order_status === 'Order Accepted' || order.order_status === 'Dispatched' || order.order_status === 'Delivered') { %>active<% } %>">
+        <div class="circle">2</div>
+        <p>Order Accepted</p>
+      </div>
+      <div class="step <% if (order.order_status === 'Dispatched' || order.order_status === 'Delivered') { %>active<% } %>">
+        <div class="circle">3</div>
+        <p>Dispatched</p>
+      </div>
+      <div class="step <% if (order.order_status === 'Delivered') { %>active<% } %>">
+        <div class="circle">4</div>
+        <p>Delivered</p>
+      </div>
+    <% } %>
+  </div>
+
+  <h4 class="mt-4">Products</h4>
+  <table class="table table-bordered mt-2">
+    <thead>
+      <tr>
+        <th>Product Image</th>
+        <th>Product Name</th>
+        <th>Price (₹)</th>
+        <th>Quantity</th>
+        <th>Total (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orderItems.forEach(item => { %>
+        <tr>
+          <td><img src="/<%= item.product_image %>" alt="<%= item.product_name %>" class="product-image"></td>
+          <td><%= item.product_name %></td>
+          <td>₹<%= parseFloat(item.price).toFixed(2) %></td>
+          <td><%= item.quantity %></td>
+          <td>₹<%= (parseFloat(item.price) * item.quantity).toFixed(2) %></td>                
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+</div>
+<%- include("../includes/footer.ejs") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Billing Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .search-container {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .list-group-item {
+      cursor: pointer;
+    }
+    #bill-summary {
+      margin-top: 40px;
+    }
+    #payment-section {
+      margin-top: 40px;
+      text-align: center;
+    }
+    #suggestions {
+      position: absolute;
+      width: 100%;
+      z-index: 1000;
+    }
+    .qty-input {
+      width: 70px;
+    }
+    .navbar{
+        background-color: #007bff;
+    }
+  </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">VendoMan</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/vendor_dashboard">
+                  <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">
+                  <i class="fa fa-sign-out-alt"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container">
+  <div class="search-container">
+    <input type="text" class="form-control" id="product-search" placeholder="Search product...">
+    <div id="suggestions" class="list-group mt-2" style="display: none;"></div>
+  </div>
+
+  <div id="bill-summary">
+    <h3>Bill Summary</h3>
+    <form id="bill-form">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price (₹)</th>
+            <th>Total (₹)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="bill-items"></tbody>
+      </table>
+      <div class="text-end">
+        <strong>Total: ₹<span id="total-amount">0.00</span></strong>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Generate Bill</button>
+    </form>
+  </div>
+
+  <div id="payment-section" style="display: none;">
+    <h3>Pay Now</h3>
+    <br>
+    <button class="btn btn-success mt-3" onclick="window.print()">Print Bill</button>
+  </div>
+</div>
+
+<!-- Error Modal for Stock Validation -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="errorModalLabel">Stock Error</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="errorMessage">
+        <!-- Error message will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quantity Modal -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="quantityModalLabel">Enter Quantity</h5>
+        <button type="submit" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="number" id="quantity-input" class="form-control" placeholder="Enter quantity" min="1">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="add-product-btn">Add Product</button>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include("../includes/footer.ejs") %>
+<script>
+let productsAdded = [];
+let totalAmount = 0;
+let selectedProduct = null;
+
+const searchInput = document.getElementById('product-search');
+const suggestions = document.getElementById('suggestions');
+
+// Live search
+searchInput.addEventListener('input', function () {
+  const query = this.value.trim();
+  if (query.length > 0) {
+    fetch(`/search-products?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        suggestions.innerHTML = '';
+        if (data.success && data.products.length > 0) {
+          data.products.forEach(product => {
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.textContent = `${product.product_name} - ₹${product.price}`;
+            item.onclick = () => openQuantityModal(product);
+            suggestions.appendChild(item);
+          });
+          suggestions.style.display = 'block';
+        } else {
+          suggestions.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching products:', err);
+        suggestions.style.display = 'none';
+      });
+  } else {
+    suggestions.style.display = 'none';
+  }
+});
+
+// Open Modal to enter Quantity
+function openQuantityModal(product) {
+  selectedProduct = product;  // Save product info including stock
+  document.getElementById('quantity-input').value = '';
+  const quantityModal = new bootstrap.Modal(document.getElementById('quantityModal'));
+  quantityModal.show();
+}
+
+// Add product after quantity entered
+document.getElementById('add-product-btn').addEventListener('click', function () {
+  const quantity = parseInt(document.getElementById('quantity-input').value);
+
+  if (!quantity || quantity <= 0) {
+    showErrorModal("Please enter a valid quantity.");
+    return;
+  }
+
+  // 🚨 Check if quantity requested > stock available
+  if (quantity > selectedProduct.stock) {
+    showErrorModal(`❌ Only ${selectedProduct.stock} units available in stock! Please enter a lower quantity.`);
+    return;
+  }
+
+  addProductToBill(selectedProduct, quantity);
+  const quantityModal = bootstrap.Modal.getInstance(document.getElementById('quantityModal'));
+  quantityModal.hide();
+});
+
+// Show error modal with the message
+function showErrorModal(message) {
+  document.getElementById('errorMessage').textContent = message;
+  const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+  errorModal.show();
+}
+
+// Add product to bill table
+function addProductToBill(product, quantity) {
+  const total = quantity * product.price;
+
+  const productObj = {
+    productId: product.id,
+    productName: product.product_name,
+    price: product.price,
+    quantity: quantity
+  };
+  productsAdded.push(productObj);
+
+  const tr = document.createElement('tr');
+  const rowIndex = productsAdded.length - 1;
+
+  tr.innerHTML = `
+    <td>${product.product_name}</td>
+    <td><input type="number" class="form-control qty-input" value="${quantity}" min="1"></td>
+    <td>₹${product.price}</td>
+    <td class="total-cell">₹${total.toFixed(2)}</td>
+    <td><button type="button" class="btn btn-danger btn-sm delete-btn">🗑️</button></td>
+  `;
+
+  // Handle quantity update
+  const qtyInput = tr.querySelector('.qty-input');
+  qtyInput.addEventListener('input', function () {
+    const newQty = parseInt(this.value) || 0;
+    productObj.quantity = newQty;
+
+    const newTotal = newQty * product.price;
+    tr.querySelector('.total-cell').textContent = `₹${newTotal.toFixed(2)}`;
+    recalculateTotal();
+  });
+
+  // Handle delete
+  tr.querySelector('.delete-btn').addEventListener('click', function () {
+    productsAdded.splice(rowIndex, 1);
+    tr.remove();
+    recalculateTotal();
+  });
+
+  document.getElementById('bill-items').appendChild(tr);
+  recalculateTotal();
+
+  searchInput.value = '';
+  suggestions.style.display = 'none';
+}
+
+// Recalculate grand total
+function recalculateTotal() {
+  totalAmount = productsAdded.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.getElementById('total-amount').textContent = totalAmount.toFixed(2);
+}
+
+// Submit bill
+document.getElementById('bill-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  fetch('/generate-bill', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ products: productsAdded, totalAmount: totalAmount })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('payment-section').style.display = 'block';
+      } else {
+        showErrorModal('Failed to generate bill: ' + data.message);
+      }
+    })
+    .catch(err => {
+      console.error('Error submitting bill:', err);
+      showErrorModal('Error submitting the bill. Please try again.');
+    });
+});
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.container{
+    flex: 1;
+}
+.navbar{
+    background-color: white;
+}
+
+h2 {
+    color: #343a40;
+    text-align: center;
+  }
+  
+  /* Table Styling */
+  .table th, .table td {
+    text-align: center;
+  }
+  
+  .table {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .list-group-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  button {
+    margin-top: 20px;
+  }
+  
+  input[type="text"] {
+    margin-right: 10px;
+  }
+  
+  /* Navbar Styling */
+  .navbar {
+    margin-bottom: 20px;
+    background-color: #007bff;
+  }
+  
+  .navbar a {
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Form Styling */
+  .input-group {
+    width: 100%;
+    margin-top: 20px;
+  }

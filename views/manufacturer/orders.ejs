@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manufacturer Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+    .container { margin-top: 3rem; }
+    .card { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .navbar {
+      background-color: #07ba69;
+    }
+  </style>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">VendoMan</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/manufacturer_dashboard">
+                  <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout_manufacturer">
+                  <i class="fa fa-sign-out-alt"></i> Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container mt-5">
+  <h3>Order Requests</h3>
+
+  <% if (orders.length > 0) { %>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Vendor Name</th>
+          <th>Shop Name</th>
+          <th>Order Date</th>
+          <th>Total Amount</th>
+          <th>Order Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <% if (order.order_status === 'Order Placed') { %>  <!-- Show only orders with status "Order Placed" -->
+            <tr>
+              <td><%= order.id %></td>
+              <td><%= order.owner_name %> (Vendor)</td>
+              <td><%= order.shop_name %></td>
+              <td><%= new Date(order.order_date).toLocaleString() %></td>
+              <td>₹ <%= Number(order.total_amount).toFixed(2) %></td>
+              <td><%= order.order_status %></td>
+              <td>
+                <form action="/manufacturer/order/accept/<%= order.order_id %>" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-success">Accept</button>
+                </form>
+                <form action="/manufacturer/order/reject/<%= order.order_id %>" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="7">
+                <strong>Order Items:</strong>
+                <ul>
+                  <% groupedOrderItems[order.order_id].forEach(item => { %>
+                    <li><%= item.product_name %> - ₹ <%= (Number(item.price) || 0).toFixed(2) %> x <%= item.quantity %> = ₹ <%= (Number(item.price * item.quantity) || 0).toFixed(2) %></li>
+                  <% }); %>
+                </ul>
+              </td>
+            </tr>
+          <% } %>
+        <% }); %>
+      </tbody>      
+    </table>
+  <% } else { %>
+    <p>No orders to display.</p>
+  <% } %>
+</div>
+<%- include("../includes/footer.ejs") %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

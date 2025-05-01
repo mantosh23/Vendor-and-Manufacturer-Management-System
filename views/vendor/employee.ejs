@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vendor Employee Management Panel">
+  <meta name="author" content="Your Company Name">
+  <title>Vendor Employees</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+    .navbar { background-color: #007bff; }
+    .navbar-brand, .nav-link { color: #fff !important; }
+    .search-bar { margin: 2rem auto; max-width: 600px; }
+    .employee-card { transition: transform 0.3s ease; }
+    .employee-card:hover { transform: scale(1.02); }
+    .add-card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .btn-attendance { margin-bottom: 2rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">VendoMan</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/vendor_dashboard">
+              <i class="fa fa-tachometer-alt"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">
+              <i class="fa fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Search Bar -->
+    <form class="d-flex justify-content-center search-bar" method="GET" action="/vendor/employees/search">
+      <input class="form-control me-2 w-75" type="search" name="search" value="<%= search %>" placeholder="Search Employee..." aria-label="Search">
+      <button class="btn btn-outline-primary" type="submit">
+        <i class="fas fa-search"></i>
+      </button>
+    </form>
+
+    <!-- Take Attendance Button -->
+    <div class="text-center">
+      <a href="/vendor/employees/attendance" class="btn btn-success btn-lg btn-attendance">
+        <i class="fas fa-calendar-check me-2"></i>Take Attendance
+      </a>
+    </div>
+
+    <!-- Add Employee Form -->
+    <div class="add-card">
+      <h4 class="mb-3">Add New Employee</h4>
+      <form action="/vendor/employees/add" method="POST" enctype="multipart/form-data">
+        <div class="row g-3">
+          <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="Name" required></div>
+          <div class="col-md-6"><input type="file" name="photo" accept="image/*" class="form-control" required></div>
+          <div class="col-md-6"><input type="tel" name="phone_number" class="form-control" placeholder="Phone Number"></div>
+          <div class="col-md-6"><input type="email" name="email" class="form-control" placeholder="Email"></div>
+          <div class="col-md-6"><input type="text" name="position" class="form-control" placeholder="Position"></div>
+          <div class="col-md-6"><input type="date" name="joining_date" class="form-control"></div>
+          <div class="col-md-6"><input type="number" name="salary" class="form-control" placeholder="Initial Salary" min="0" step="0.01"></div>
+          <!-- Bank Details -->
+          <div class="col-md-6"><input type="text" name="account_number" class="form-control" placeholder="Bank Account Number"></div>
+          <div class="col-md-6"><input type="text" name="bank_name" class="form-control" placeholder="Bank Name"></div>
+          <div class="col-md-6"><input type="text" name="ifsc_code" class="form-control" placeholder="IFSC Code"></div>
+        </div>
+        <div class="mt-3 text-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Add Employee
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Employee Cards -->
+    <% if (employees.length === 0) { %>
+      <div class="alert alert-warning text-center">
+        No employees found matching "<%= search %>".
+      </div>
+    <% } else { %>
+      <div class="row">
+        <% employees.forEach(employee => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card employee-card shadow-sm">
+              <img src="/uploads/<%= employee.photo_url || 'default.png' %>" class="card-img-top" alt="Employee Photo">
+              <div class="card-body">
+                <h5 class="card-title"><%= employee.name %></h5>
+                <p class="card-text">
+                  <strong>Email:</strong> <%= employee.email %><br>
+                  <strong>Phone:</strong> <%= employee.phone_number %><br>
+                  <strong>Position:</strong> <%= employee.position %>
+                </p>
+                <a href="/vendor/employees/view/<%= employee.id %>" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-eye me-1"></i>View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+  </div>
+  <%- include("../includes/footer.ejs") %>
+
+  <!-- Bootstrap Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Order - Vendor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .manufacturer-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .manufacturer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .manufacturer-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .search-container input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .product-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .card-body h5 {
+            font-weight: bold;
+        }
+
+        .card-body .btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+        .navbar{
+          background-color: #007bff;
+          margin-bottom: 2rem;
+        }
+.search-bar{margin: 2rem auto; max-width: 600px;}
+.search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-container input {
+            width: 60%; /* Increased width for better visibility */
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+<div class="container-fluid">
+<a class="navbar-brand" href="#">VendoMan</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+  <ul class="navbar-nav ms-auto">
+    <li class="nav-item">
+      <a class="nav-link" href="/vendor_dashboard">
+        <i class="fa fa-tachometer-alt"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+        <a href="/cart" class="btn btn-success"> My Cart</a>
+    </li>
+  </ul>
+</div>
+</div>
+</nav>
+<div class="text-center">
+
+    <h3>All Manufacturers</h3>
+</div>
+    <div class="container mt-4">
+        <div class="search-container text-center">
+            <input type="text" id="search-manufacturer" class="form-control" placeholder="Search Manufacturers..." onkeyup="searchManufacturers()">
+        </div>
+
+        <div class="row" id="manufacturer-list">
+            <% manufacturers.forEach(function(manufacturer) { %>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card manufacturer-card">
+                        <img src="<%= manufacturer.image %>" class="card-img-top" alt="<%= manufacturer.company_name %>">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= manufacturer.company_name %></h5>
+                            <p><strong>Owner:</strong> <%= manufacturer.owner_name %></p>
+                            <p><strong>Location:</strong> <%= manufacturer.address %></p>
+                            <p><strong>Company Name:</strong> <%= manufacturer.company_name %></p>
+                            
+                            <form action="/make_order/products/<%= manufacturer.id %>" method="GET">
+                                <button type="submit" class="btn btn-success">Show Products</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+    <%- include("../includes/footer.ejs") %>
+    <script>
+        const originalCards = Array.from(document.querySelectorAll('#manufacturer-list .col-md-4'));
+    
+        function searchManufacturers() {
+            const searchQuery = document.getElementById('search-manufacturer').value.toLowerCase();
+            const container = document.getElementById('manufacturer-list');
+    
+            // Clear container
+            container.innerHTML = '';
+    
+            let matched = [];
+            let unmatched = [];
+    
+            originalCards.forEach((card) => {
+                const name = card.querySelector('.card-title').innerText.toLowerCase();
+                if (name.includes(searchQuery)) {
+                    matched.push(card);
+                } else {
+                    unmatched.push(card);
+                }
+            });
+    
+            // Append matched cards first
+            matched.forEach(card => {
+                card.style.display = '';
+                container.appendChild(card);
+            });
+    
+            // Append unmatched cards (you can comment this out if you want to hide them)
+            unmatched.forEach(card => {
+                card.style.display = 'none';
+                container.appendChild(card);
+            });
+        }
+    </script>
+    
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

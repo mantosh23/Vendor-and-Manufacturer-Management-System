@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Dashboard</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background-color: #007bff;
+    }
+    .navbar-brand, .nav-link {
+      color: white !important;
+    }
+    .nav-link:hover {
+      color: #ffc107 !important;
+    }
+    .dashboard-header {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .dashboard-header h2 {
+      font-weight: bold;
+      color: #007bff;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    .btn-custom {
+      background-color: #007bff;
+      color: white;
+      border-radius: 25px;
+    }
+    .btn-custom:hover {
+      background-color: #0056b3;
+    }
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .notifications {
+      background-color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .notification-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">VendoMan</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i> Profile</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid dashboard-header">
+    <h2>Welcome to Your Vendor Dashboard</h2>
+    <p class="text-muted">Monitor, manage, and grow your business.</p>
+  </div>
+
+  <div class="container mt-4">
+    <div class="row text-center">
+      <!-- Cards -->
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-box"></i> Manage Stock</h5>
+            <p class="card-text">Track and update product stock in real-time.</p>
+            <a href="/stock" class="btn btn-custom">Manage</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-users"></i> Employees</h5>
+            <p class="card-text">Manage employee roles and performance.</p>
+            <a href="/vendor/employee/dashboard" class="btn btn-custom">View</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-file-invoice"></i> Billing</h5>
+            <p class="card-text">Generate invoices and keep billing organized.</p>
+            <a href="/billing" class="btn btn-custom">Start Billing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <!-- Cards Row 2 -->
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-cart-plus"></i> Make Orders</h5>
+            <p class="card-text">Place new orders to restock inventory.</p>
+            <a href="/make_order" class="btn btn-custom">Order</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-box-open"></i> My Orders</h5>
+            <p class="card-text">Track orders and view order history.</p>
+            <a href="/vendor/orders" class="btn btn-custom">View Orders</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card p-4">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-user-circle"></i> Profile</h5>
+            <p class="card-text">Edit your personal and business info.</p>
+            <a href="/profile" class="btn btn-custom">Go to Profile</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts and Notifications -->
+    <div class="row mt-5">
+      <div class="col-md-8 mb-4">
+        <div class="chart-container">
+          <h5 class="mb-3">Monthly Sales Overview</h5>
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="notifications">
+          <h5>Notifications</h5>
+          <div class="notification-item"><i class="fas fa-exclamation-circle text-warning"></i> Stock for "Item A" is below minimum.</div>
+          <div class="notification-item"><i class="fas fa-check-circle text-success"></i> Order #1024 has been delivered.</div>
+          <div class="notification-item"><i class="fas fa-user-plus text-primary"></i> New employee added: Rakesh Kumar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <%- include("../includes/footer.ejs") %>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Sales (₹)',
+          data: [12000, 19000, 3000, 5000, 20000, 24000],
+          backgroundColor: 'rgba(0, 123, 255, 0.1)',
+          borderColor: '#007bff',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

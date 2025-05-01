@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    .product-image {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+    }
+    .cart-table td, .cart-table th {
+      vertical-align: middle;
+    }
+    .cart-action-btn {
+      cursor: pointer;
+    }
+    .cart-total {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+    .navbar { background-color: #007bff; }
+    .navbar-brand, .nav-link { color: #fff !important; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/#">VendoMan</a>
+    <div class="d-flex">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/vendor_dashboard">
+            <i class="fa fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h3>Your Cart</h3>
+
+  <form action="/cart/place_order" method="POST">
+    <input type="hidden" name="vendorId" value="<%= vendorId %>">
+    <input type="hidden" name="manufacturerId" value="<%= manufacturerId %>">
+    <input type="hidden" name="totalAmount" value="<%= parseFloat(totalAmount).toFixed(2) %>">
+  
+    <table class="table table-bordered cart-table">
+      <thead>
+        <tr>
+          <th>Product Image</th>
+          <th>Product Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cartItems.forEach(item => { %>
+          <tr>
+            <td><img src="<%= item.product_image %>" alt="Product" class="product-image"></td>
+            <td><%= item.product_name %></td>
+            <td><%= parseFloat(item.price).toFixed(2) %></td>
+            <td>
+              <button type="button" class="btn btn-outline-secondary cart-action-btn" onclick="updateQuantity('<%= item.cart_id %>', 'decrease')">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span><%= item.quantity %></span>
+              <button type="button" class="btn btn-outline-secondary cart-action-btn" onclick="updateQuantity('<%= item.cart_id %>', 'increase')">
+                <i class="fas fa-plus"></i>
+              </button>
+            </td>
+            <td><%= parseFloat(item.price * item.quantity).toFixed(2) %></td>
+            
+            <!-- Hidden inputs for price and subtotal -->
+            <input type="hidden" name="productPrice_<%= item.cart_id %>" value="<%= item.price %>">
+            <input type="hidden" name="productTotal_<%= item.cart_id %>" value="<%= parseFloat(item.price * item.quantity).toFixed(2) %>">
+            
+            <td>
+              <button type="button" class="btn btn-danger cart-action-btn" onclick="removeItem('<%= item.cart_id %>')">
+                <i class="fas fa-trash-alt"></i> Remove
+              </button>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="cart-total">Total: ₹ <%= parseFloat(totalAmount).toFixed(2) %></h4>
+      <button type="submit" class="btn btn-success">Place Order</button>
+    </div>
+  </form>
+  
+</div>
+<%- include("../includes/footer.ejs") %>
+
+<script>
+  function updateQuantity(cartId, action) {
+    fetch(`/cart/update_quantity/${cartId}/${action}`, { method: 'POST' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload(); 
+        } else {
+          alert("Error updating quantity!");
+        }
+      })
+      .catch(err => console.error("Error:", err));
+  }
+
+  function removeItem(cartId) {
+    fetch(`/cart/remove_item/${cartId}`, { method: 'POST' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert("Error removing item!");
+        }
+      })
+      .catch(err => console.error("Error:", err));
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

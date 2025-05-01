@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturer Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" id="theme-link">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- Keep your same styles here --- */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #07ba69;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffcd39 !important;
+        }
+        .navbar-toggler-icon {
+            background-color: white;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1rem;
+        }
+        .navbar-dark .navbar-toggler-icon {
+            background-color: #fff;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-body {
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .btn {
+            background-color: #07ba69;
+            color: white;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #07ba69;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #f1f1f1;
+        }
+        .dark-mode .navbar {
+            background-color: #222;
+        }
+        .dark-mode .card {
+            background-color: #495057;
+            color: #fff;
+        }
+        .dark-mode .card:hover {
+            background-color: #6c757d;
+        }
+        .dark-mode .btn {
+            background-color: #6c757d;
+        }
+        .dark-mode .btn:hover {
+            background-color: #5a6368;
+        }
+        .theme-toggle {
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+        .card-deck .col-md-4 {
+            padding: 10px;
+        }
+        @media (max-width: 768px) {
+            .card-deck .col-md-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with theme toggle -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">VendoMan</a> <!-- Changed name -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/profile"><i class="fas fa-user"></i> Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout_manufacturer"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+                <li class="nav-item">
+                    <span id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+        <div class="row card-deck">
+            <!-- Profile Option -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-user-circle"></i> Profile</h5>
+                        <p class="card-text">View and update your profile information.</p>
+                        <a href="/manufacturer/profile" class="btn">Go to Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Stock Option -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-box"></i> Manage Stock</h5>
+                        <p class="card-text">Manage your product stock details.</p>
+                        <a href="/manufacturer/stock" class="btn">Go to Stock</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Employees Option -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-users"></i> Manage Employees</h5>
+                        <p class="card-text">Manage employee details and assignments.</p>
+                        <a href="/manufacturer/employee/dashboard" class="btn">Go to Employees</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row card-deck mt-4">
+            <!-- Production Planning -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-cogs"></i> Order Requests</h5>
+                        <p class="card-text">See all the order requests</p>
+                        <a href="/manufacturer/orders" class="btn">See Requests</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw Material Management -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-cube"></i> Manage Orders</h5>
+                        <p class="card-text">Manage orders inventory and suppliers.</p>
+                        <a href="/manufacturer/manage-orders" class="btn">Manage</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Production Orders -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-industry"></i> Production Orders</h5>
+                        <p class="card-text">Track and manage your production orders.</p>
+                        <a href="/production_orders" class="btn">View Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include("../includes/footer.ejs") %>
+    <!-- Script for theme toggle -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeLink = document.getElementById('theme-link');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

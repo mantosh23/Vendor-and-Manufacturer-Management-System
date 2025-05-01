@@ -1,0 +1,67 @@
+<% title = 'Generated Bill' %> <!-- Set page title -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS (Directly in the EJS file) -->
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    h2 {
+      color: #343a40;
+      text-align: center;
+    }
+
+    .list-group-item {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      margin-top: 20px;
+    }
+
+    .container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2 class="text-center mb-4">Bill Details</h2>
+
+    <p><strong>Date:</strong> <%= new Date(billDetails.bill_date).toLocaleDateString() %></p>
+    <p><strong>Total Amount:</strong> $<%= billDetails.total_amount.toFixed(2) %></p>
+
+    <h4>Products</h4>
+    <ul class="list-group">
+      <% products.forEach(product => { %>
+        <li class="list-group-item">
+          <%= product.name %> - $<%= product.price.toFixed(2) %>
+        </li>
+      <% }) %>
+    </ul>
+
+    <!-- Payment and Print Options -->
+    <div class="mt-4">
+      <button class="btn btn-primary" onclick="window.print()">Print Bill</button>
+    </div>
+  </div>
+  <%- include("../includes/footer.ejs") %>
+  <!-- Bootstrap JS & Dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
